@@ -271,6 +271,23 @@ server {
     # =============================================================================
     # EvoAI Core Service Routes
     # =============================================================================
+    # Agent-specific integration endpoints
+    location ~ ^/api/v1/agents/[^/]+/integrations/ {
+        proxy_pass $processor_service$request_uri;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Authorization $http_authorization;
+
+        proxy_set_header api_access_token $http_api_access_token;
+        proxy_cookie_path / /;
+        proxy_set_header Cookie $http_cookie;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
     location ~ ^/api/v1/(agents|folders|mcp-servers|custom-mcp-servers|custom-tools) {
         proxy_pass $evoai_service$request_uri;
         proxy_set_header Host $host;
@@ -292,7 +309,9 @@ server {
     # =============================================================================
 
     # Chat endpoints (including WebSocket) — needs longer timeout
-    location ~ ^/api/v1/chat {
+    # Anchored to the `chat` path segment so it does NOT swallow sibling CRM
+    # routes like /api/v1/chat_pages (which must fall through to $crm_service).
+    location ~ ^/api/v1/chat(/|$) {
         proxy_pass $processor_service$request_uri;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -318,23 +337,6 @@ server {
         proxy_set_header X-Forwarded-Proto https;
         proxy_set_header Authorization $http_authorization;
         proxy_set_header X-Api-Key $http_x_api_key;
-
-        proxy_set_header api_access_token $http_api_access_token;
-        proxy_cookie_path / /;
-        proxy_set_header Cookie $http_cookie;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-
-    # Agent-specific integration endpoints
-    location ~ ^/api/v1/agents/[^/]+/integrations {
-        proxy_pass $processor_service$request_uri;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https;
-        proxy_set_header Authorization $http_authorization;
 
         proxy_set_header api_access_token $http_api_access_token;
         proxy_cookie_path / /;
@@ -395,7 +397,9 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
-        client_max_body_size 10M;
+        # WhatsApp media chega base64 inline no webhook (Evolution) — 10M rejeitava
+        # documentos/PDF com 413. Alinha com o limite de 100M do resto do gateway (EVO-1966).
+        client_max_body_size 100M;
     }
 
     # =============================================================================
