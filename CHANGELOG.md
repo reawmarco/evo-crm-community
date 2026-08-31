@@ -121,7 +121,7 @@ The largest release-candidate window of the cycle (~5 weeks since rc5, ~300 comm
 
 Also headline-worthy: **agent conversation memory restored** — the bot-runtime was keying ADK sessions on numeric display ids instead of UUIDs, so the agent answered every message from scratch ("404/500 Session not found"); it now sends the conversation UUID as `contextId` and the contact UUID as `userId`. New capabilities include a full **SendGrid email channel** (EVO-1248–1251, EVO-1721), **B14 CRM Lead Capture** (form-builder + chat pages + public pages, EVO-1771), **conversations history import** (EVO-1557), **products CSV bulk import with dry-run** (EVO-1555, EVO-1736, EVO-1783), a **Segments drag-drop canvas builder** routed through the CRM proxy (EVO-1247, EVO-1569), and six pipeline-oriented Journey nodes/triggers behind a pre-activation validation framework (EVO-1744, EVO-1742, EVO-1273/1272/1265/1257/1256/1266).
 
-On the umbrella itself: swarm/prod-test parity fixes (EVO-1966 — local storage, processor password, gateway media, healthchecks for evo_crm/evo-core/evo-frontend, guaranteed bring-up from a clean checkout), a per-PR review environment (`internal/review/review.sh` + `:pr-N` image builds across all services, EVO-1998), compose/env fixes (`VITE_EVOFLOW_API_URL` for the frontend EVO-1906, `EVO_AUTH_BASE_URL` for the processor EVO-1683, Temporal healthcheck EVO-1755), and a **new submodule**: `evo-flow-community` with a local evo-flow + ClickHouse stack for event tracking (EVO-1571).
+On the umbrella itself: swarm/prod-test parity fixes (EVO-1966 — local storage, processor password, gateway media, healthchecks for evo_crm/evo-core/evo-frontend, guaranteed bring-up from a clean checkout), compose/env fixes (`VITE_EVOFLOW_API_URL` for the frontend EVO-1906, `EVO_AUTH_BASE_URL` for the processor EVO-1683, Temporal healthcheck EVO-1755), and a **new submodule**: `evo-flow-community` with a local evo-flow + ClickHouse stack for event tracking (EVO-1571).
 
 ### Submodules updated
 
@@ -156,8 +156,7 @@ On the umbrella itself: swarm/prod-test parity fixes (EVO-1966 — local storage
 
 ### Repository housekeeping
 
-- New per-PR review environment: `prod-test` was refactored into `internal/review` with PR-parameterized image tags, plus `internal/review/review.sh` which takes a PR link, adjusts the image and brings up the stack (EVO-1998).
-- `evo-assistant` added to `.gitignore`; EVO-1354 review rounds A/B/C documented.
+- `evo-assistant` added to `.gitignore`.
 - Footer links: this release adds the previously missing `[v1.0.0-rc5]` compare link and repoints `[Unreleased]` (it had been left at `v1.0.0-rc4...HEAD` since rc5).
 
 ## [v1.0.0-rc5] - 2026-05-27
